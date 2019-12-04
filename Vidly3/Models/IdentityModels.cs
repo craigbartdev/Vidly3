@@ -23,6 +23,8 @@ namespace Vidly3.Models
         //manually add this to add Customers table to database
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<MembershipType> MembershipTypes { get; set; }
+        public DbSet<Genre> Genres { get; set; }
 
         //manually change name of database below
         public ApplicationDbContext()

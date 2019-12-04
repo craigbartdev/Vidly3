@@ -1,0 +1,52 @@
+﻿@*pass in MembershipTypes and Customer from viewModel
+    used to take Customer model, but changed it for membership dropdown
+*@
+@model Vidly3.ViewModels.CustomerFormViewModel
+
+@{
+
+    ViewBag.Title = "New";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+
+@*
+    BeginForm creates initial <form> tag
+    Create action in customers controller
+    form-control class is for style.
+    Renamed Create to Save after adding Edit action
+*@
+@using (Html.BeginForm("Save", "Customers"))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Name) @*label for name from Customer*@
+        @*text input for name from Customer. add a class as argument*@
+        @Html.TextBoxFor(m => m.Customer.Name, new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.Birthdate)
+        @*the format string removes the time from datetime*@
+        @Html.TextBoxFor(m => m.Customer.Birthdate, "{0:d MMM yyyy}", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Customer.MembershipTypeId)
+        @*dropdown list, SelectList gets the dropdown items,
+            Select Membership Types is a blank item,
+            MembershipTypeId has Display(Name) in Customer model*@
+        @Html.DropDownListFor(m => m.Customer.MembershipTypeId,
+        new SelectList(Model.MembershipTypes, "Id", "Name"), "Select Membership Type",
+        new { @class = "form-control"})
+    </div>
+    @*do not put checkbox in form-group class. It looks odd*@
+    <div>
+        <label>
+            @*the label comes after the checkbox*@
+            @Html.CheckBoxFor(m => m.Customer.IsSubscribedToNewsletter) Subscribe to Newsletter
+        </label>
+    </div>
+    @*hidden id field for Save action*@
+    @Html.HiddenFor(m => m.Customer.Id)
+    <button type="submit" class="btn btn-primary">Save</button>
+
+}

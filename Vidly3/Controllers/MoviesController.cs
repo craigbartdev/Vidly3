@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Vidly3.Models; //require models
-using Vidly3.ViewModels; //require ViewModels for customers list
+using Vidly3.ViewModels; //require ViewModels for movies list
 
 namespace Vidly3.Controllers
 {
@@ -23,6 +24,69 @@ namespace Vidly3.Controllers
             _context.Dispose();
         }
 
+        public ActionResult New()
+        {
+            var genres = _context.Genres.ToList();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        public ActionResult Edit(int id)
+        {
+            var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
+
+            if (movie == null)
+                HttpNotFound();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0) //add
+            {
+                //set DateAdded to current DateTime
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else //edit
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+
+                //do not add DateTime since it is not passed in the form
+                movieInDb.Name = movie.Name;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
+            }
+            
+            ////from Entity relation error. Fix was to Require GenreId not Genre
+            //try
+            //{
+            //    _context.SaveChanges();
+            //}
+            //catch (DbEntityValidationException e)
+            //{
+            //    Console.WriteLine(e);
+            //}
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
+        }
+
+        //GET movies
         public ViewResult Index()
         {
             //var movies = GetMovies();
@@ -30,7 +94,7 @@ namespace Vidly3.Controllers
 
             return View(movies);
         }
-
+        //GET Movies/Details/Id
         public ActionResult Details(int id)
         {
             var movie = _context.Movies.Include(m => m.Genre).SingleOrDefault(m => m.Id == id);

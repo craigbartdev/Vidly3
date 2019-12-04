@@ -20,8 +20,13 @@ namespace Vidly3.Models
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
+        //manually add this to add Customers table to database
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Movie> Movies { get; set; }
+
+        //manually change name of database below
         public ApplicationDbContext()
-            : base("DefaultConnection", throwIfV1Schema: false)
+            : base("Vidly3DB", throwIfV1Schema: false)
         {
         }
 

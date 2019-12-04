@@ -1,9 +1,35 @@
-﻿@model Vidly3.Models.Movie
+﻿@*@model Vidly3.Models.Movie *@
+@model Vidly3.ViewModels.RandomMovieViewModel
+
+
 
 @{
     ViewBag.Title = "Random";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>@Model.Name</h2>
+@*from before adding ViewModel-->*@
+@*<h2>@Model.Name</h2>*@
+
+
+
+@*After adding view model. in Razor View Engine can add c# code like below*@
+@{ 
+    var className = Model.Customers.Count > 5 ? "popular" : null;
+}
+
+@*pass in a variable into the class below to dynamically render them*@
+<h2 class="@className">@Model.Movie.Name</h2>
+
+@if (Model.Customers.Count == 0)
+{
+    <text>No one has rented this movie before.</text>
+}
+else
+{
+    foreach (var customer in Model.Customers) //this is c# code
+    {
+        <li>@customer.Name</li>
+    }
+}
 

@@ -8,6 +8,8 @@ namespace Vidly3
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
         {
             filters.Add(new HandleErrorAttribute());
+            //to apply Authorization globally. allow anonymous where you want unauthenticated viewers
+            filters.Add(new AuthorizeAttribute());
         }
     }
 }

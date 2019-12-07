@@ -29,8 +29,10 @@ namespace Vidly3.Controllers
             //get from dab
             var membershipTypes = _context.MembershipTypes.ToList();
             //bind membershiptypes data to viewmodel
-            var viewModel = new CustomerFormViewModel
+            var viewModel = new CustomerFormViewModel()
             {
+                //initialize customer to get rid of null id error
+                Customer = new Customer(), 
                 MembershipTypes = membershipTypes
             };
             //pass to the View
@@ -47,7 +49,7 @@ namespace Vidly3.Controllers
                 return HttpNotFound();
 
             //change name from NewCustomerViewModel to CustomerFormViewModel with F2
-            var viewModel = new CustomerFormViewModel
+            var viewModel = new CustomerFormViewModel()
             {
                 Customer = customer,
                 MembershipTypes = _context.MembershipTypes.ToList()
@@ -60,8 +62,21 @@ namespace Vidly3.Controllers
         //restrict to POST request. do not allow any other requests to reach this action
         //Changed from Create to Save to handle Edit action as well
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Customer customer)
         {
+            //validate the form before submitting
+            //if not valid send back to the form
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new CustomerFormViewModel()
+                {
+                    Customer = customer,
+                    MembershipTypes = _context.MembershipTypes.ToList()
+                };
+
+                return View("CustomerForm", viewModel);
+            };
             //we will have an Id of 0 if Creating customer.
             //Id sent as hidden field in the form
             if (customer.Id == 0)
@@ -96,9 +111,11 @@ namespace Vidly3.Controllers
         {
             //get all customers
             //use toList to be query over customers immediately instead of in foreach statement of view
-            var customers = _context.Customers.Include(c => c.MembershipType).ToList();
+            //no longer needed after we make DataTables that use their own ajax requests to /api/customers
+            //var customers = _context.Customers.Include(c => c.MembershipType).ToList();
 
-            return View(customers);
+            //return View(customers);
+            return View();
         }
 
         //GET Customers/Details/id

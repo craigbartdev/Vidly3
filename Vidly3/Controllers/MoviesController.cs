@@ -28,8 +28,11 @@ namespace Vidly3.Controllers
         {
             var genres = _context.Genres.ToList();
 
-            var viewModel = new MovieFormViewModel
+            var viewModel = new MovieFormViewModel()
             {
+                //prevent null Id error by setting new Movie. Caused weird default values in form.
+                //not needed after making viewModel constructor
+                //Movie = new Movie(), 
                 Genres = genres
             };
 
@@ -43,9 +46,9 @@ namespace Vidly3.Controllers
             if (movie == null)
                 HttpNotFound();
 
-            var viewModel = new MovieFormViewModel
+            var viewModel = new MovieFormViewModel(movie) //pass in movie after making constructor
             {
-                Movie = movie,
+                //Movie = movie, //not needed after viewModel constructor
                 Genres = _context.Genres.ToList()
             };
 
@@ -53,8 +56,21 @@ namespace Vidly3.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
+            //redirect back to form on invalid form entry
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new MovieFormViewModel(movie) //pass in movie after making constructor
+                {
+                    //Movie = movie, //not needed after viewModel constructor
+                    Genres = _context.Genres.ToList()
+                };
+
+                return View("MovieForm", viewModel);
+            }
+
             if (movie.Id == 0) //add
             {
                 //set DateAdded to current DateTime
@@ -90,9 +106,12 @@ namespace Vidly3.Controllers
         public ViewResult Index()
         {
             //var movies = GetMovies();
-            var movies = _context.Movies.Include(m => m.Genre).ToList();
 
-            return View(movies);
+            ////not needed after using API to get table entries
+            //var movies = _context.Movies.Include(m => m.Genre).ToList();
+
+            // return View(movies);
+            return View();
         }
         //GET Movies/Details/Id
         public ActionResult Details(int id)

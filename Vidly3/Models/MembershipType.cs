@@ -20,5 +20,10 @@ namespace Vidly3.Models
         //12 months is maximum number so use byte
         public byte DurationInMonths { get; set; }
         public byte DiscountRate { get; set; }
+
+
+        //get rid of magic numbers in Min18 model
+        public static readonly byte Unknown = 0;
+        public static readonly byte PayAsYouGo = 1;
     }
 }

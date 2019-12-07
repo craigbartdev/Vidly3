@@ -12,30 +12,144 @@
     @Html.ActionLink("New Customer", "New", "Customers", null, new { @class = "btn btn-primary" })
 </p>
 
-@*conditional rendering*@
+<table id="customers" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Membership Type</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@*conditional rendering. does not work after adding datatables and altering Index action*@
+@*
 @if (!Model.Any())
 {
     <p>We don't have any customers yet.</p>
 }
 else
 {
-    <table class="table table-bordered table-hover">
+    <table id="customers" class="table table-bordered table-hover">
         <thead>
             <tr>
                 <th>Customer</th>
                 <th>Membership Type</th>
+                <th>Delete</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var customer in Model)
+            @*no longer needed after adding datatables from api. keep tbody since it is where the datatable renders*@
+            @*@foreach (var customer in Model)
             {
                 <tr>
-                    @*id object is what is sent to the Edit action*@
+                    @*id object is what is sent to the Edit action
                     <td>@Html.ActionLink(customer.Name, "Edit", "Customers", new { id = customer.Id }, null)</td>
                     <td>@customer.MembershipType.Name</td>
+                    @*to delete. js- prefix of delete to demonstrate that it is for js
+                    <td>
+                        <button data-customer-id="@customer.Id" class="btn-link js-delete">Delete</button>
+                    </td>
                 </tr>
             }
         </tbody>
     </table>
-}
+}*@
 
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            //this automatically converts customers table to datatable
+            //datatable from datatable library in bundle
+            //pagination, search, sorting included automatically
+            //datatable for parsing html
+            //$("#customers").DataTable();
+
+            //datatable for parsing json
+            var table = $("#customers").DataTable({
+                ajax: {
+                    url: "/api/customers",
+                    //for finding specific property in a json object for data array.
+                    //api/customers is an array of objects in this case set to ""
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        //data, type, row
+                        render: function (data, type, customer) {
+                            //link in first column with name of customer and link to edit page
+                            return "<a href='/customers/edit/" + customer.id + "'>" + customer.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "membershipType.name"
+                    },
+                    {
+                        data: "id",
+                        //all we need is id from data
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+                        
+                ]
+            });
+
+            //pick out delete button and pass in .js-delete as filter
+            //when you pass js-delete it means callback only fires on click of that class
+            $("#customers").on("click", ".js-delete", function () {
+                //put button in variable for use in ajax request
+                var button = $(this);
+
+                //after adding bootbox 
+                bootbox.confirm("Are you sure you want to delete this customer?", function (result) {
+                    //result if they confirm that they want to delete
+                    if (result) {
+                        $.ajax({
+                            url: "/api/customers/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function () {
+                                //for testing
+                                //console.log("Success");
+
+                                //could call $(this) instead of button
+                                //removes the row that is parent of button from table
+                                //does not remove it entirely from datatables
+                                //button.parents("tr").remove();
+
+                                //to remove from record entirely store DataTable in table var
+                                //then remove and draw to rerender.
+                                //more methods at datatables.net
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                });
+
+                ////before bootbox
+                ////display js confirmation box then ajax delete on confirm
+                //if (confirm("Are you sure you want to delete this customer?")) {
+                //    //then on confirm make ajax request
+                //    //data-customer-id is to get the id
+                //    //DELETE at the url you want and log
+                //    $.ajax({
+                //        url: "/api/customers/" + button.attr("data-customer-id"),
+                //        method: "DELETE",
+                //        success: function () {
+                //            //for testing
+                //            //console.log("Success");
+
+                //            //could call $(this) instead of button
+                //            //removes the row that is parent of button from table
+                //            button.parents("tr").remove();
+                //        }
+                //    });
+                //}
+            });
+        });
+    </script>
+}

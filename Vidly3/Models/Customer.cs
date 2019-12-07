@@ -10,7 +10,8 @@ namespace Vidly3.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        //override default error. must [Require] because strings are nullible automatically
+        [Required(ErrorMessage = "Please enter customer's name.")]
         [StringLength(255)]
         public string Name { get; set; }
 
@@ -25,6 +26,7 @@ namespace Vidly3.Models
 
         //make optional and give new name to show in view
         [Display(Name = "Date of Birth")]
+        [Min18YearsIfAMember]
         public DateTime? Birthdate { get; set; }
     }
 }

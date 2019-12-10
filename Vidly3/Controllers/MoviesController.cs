@@ -24,6 +24,8 @@ namespace Vidly3.Controllers
             _context.Dispose();
         }
 
+        //authorize with roles. added the RoleName model so no magic string
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             var genres = _context.Genres.ToList();
@@ -39,6 +41,7 @@ namespace Vidly3.Controllers
             return View("MovieForm", viewModel);
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
@@ -111,7 +114,25 @@ namespace Vidly3.Controllers
             //var movies = _context.Movies.Include(m => m.Genre).ToList();
 
             // return View(movies);
-            return View();
+
+
+            //demonstration of memory cache on genres below
+            //only use for displaying data, not modifying it
+            //if (MemoryCache.Default["Genres"] == null)
+            //{
+            //    MemoryCache.Default["Genres"] = _context.Genres.ToList();
+            //}
+
+            //var genres = MemoryCache.Default["Genres"] as IEnumerable<Genre>;
+            //return View();
+
+
+            //after adding roles we conditionally render different views
+            //get RoleName from model
+            if (User.IsInRole(RoleName.CanManageMovies))
+                return View("Index");
+
+            return View("ReadOnlyIndex");
         }
         //GET Movies/Details/Id
         public ActionResult Details(int id)

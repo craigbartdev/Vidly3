@@ -10,6 +10,8 @@ namespace Vidly3
             filters.Add(new HandleErrorAttribute());
             //to apply Authorization globally. allow anonymous where you want unauthenticated viewers
             filters.Add(new AuthorizeAttribute());
+            //prevent access by http after enabling ssl
+            filters.Add(new RequireHttpsAttribute());
         }
     }
 }

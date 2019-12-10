@@ -40,6 +40,7 @@ namespace Vidly3.Controllers.Api
         }
 
         //POST /api/movies
+        [Authorize(Roles = RoleName.CanManageMovies)]
         [HttpPost]
         public IHttpActionResult CreateMovie(MovieDto movieDto)
         {
@@ -63,6 +64,7 @@ namespace Vidly3.Controllers.Api
 
         //PUT /api/movies/id
         //returns 200. Customer PUT returns 204 because it is void instead of IHttpActionResult
+        [Authorize(Roles = RoleName.CanManageMovies)]
         [HttpPut]
         public IHttpActionResult UpdateMovie(int id, MovieDto movieDto)
         {
@@ -86,6 +88,7 @@ namespace Vidly3.Controllers.Api
         }
 
         //DELETE /api/movies/1
+        [Authorize(Roles = RoleName.CanManageMovies)]
         [HttpDelete]
         public IHttpActionResult DeleteMovie(int id)
         {

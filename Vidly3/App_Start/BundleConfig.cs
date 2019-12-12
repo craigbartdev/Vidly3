@@ -15,7 +15,9 @@ namespace Vidly3
                         "~/Scripts/bootstrap.js",
                         //added this for datatables
                         "~/Scripts/datatables/jquery.datatables.js",
-                        "~/Scripts/datatables/datatables.bootstrap.js"
+                        "~/Scripts/datatables/datatables.bootstrap.js",
+                        "~/Scripts/typeahead.bundle.js",
+                        "~/Scripts/toastr.js"
                         ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
@@ -35,7 +37,10 @@ namespace Vidly3
                       "~/Content/bootstrap-lumen.css",
                       "~/Content/site.css",
                       //added this for datatables bootstrap styles
-                      "~/Content/datatables/css/datatables.bootstrap.css"));
+                      "~/Content/datatables/css/datatables.bootstrap.css",
+                      //for autocomplete in New rental view
+                      "~/Content/typeahead.css",
+                      "~/Content/toastr.css"));
         }
     }
 }

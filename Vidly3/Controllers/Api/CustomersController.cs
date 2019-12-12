@@ -22,7 +22,9 @@ namespace Vidly3.Controllers.Api
         //changed all types from Customer to CustomerDto after adding Dto and AutoMapper
 
         //GET /api/customers
-        public IEnumerable<CustomerDto> GetCustomers()
+        //changed from IEnumerable to an IHttpActionResult
+        //add query param to 
+        public IHttpActionResult GetCustomers(string query = null)
         {
             ////before dtos
             //return _context.Customers.ToList();
@@ -30,7 +32,21 @@ namespace Vidly3.Controllers.Api
             //after dtos and automapper use Linq Select
             //do not call the mapper method with (). delegate it by ommitting ()
             //MembershipType will be mapped to MembershipTypeDto, because that is what we have in CustomerDto
-            return _context.Customers.Include(c => c.MembershipType).ToList().Select(Mapper.Map<Customer, CustomerDto>);
+            //from when it was IEnumerable
+            //return _context.Customers.Include(c => c.MembershipType).ToList().Select(Mapper.Map<Customer, CustomerDto>);
+
+            //after making IHttpActionResult and filter textahead suggestions
+            var customersQuery = _context.Customers.Include(c => c.MembershipType);
+
+            //filter the textahead results if the query is not blank
+            if (!String.IsNullOrWhiteSpace(query))
+                customersQuery = customersQuery.Where(c => c.Name.Contains(query));
+
+            var customerDtos = customersQuery
+                .ToList()
+                .Select(Mapper.Map<Customer, CustomerDto>);
+
+            return Ok(customerDtos);
         }
 
         //GET /api/customers/1

@@ -1,0 +1,171 @@
+﻿@model dynamic
+@{
+    ViewBag.Title = "New Rental Form";
+}
+
+<h2>New Rental Form</h2>
+
+
+<form id="newRental">
+    <div class="form-group">
+        <label>Customer</label>
+        <div class="tt-container">
+            <!--required, data-rule, and name is for client side validation-->
+            <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Movie</label>
+        <div class="tt-container">
+            <input id="movie" name="movie" data-rule-atLeastOneMovie="true" type="text" value="" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 col-sm-4">
+            <ul id="movies" class="list-group"></ul>
+        </div>
+    </div>
+
+    <button class="btn btn-primary">Submit</button>
+</form>
+
+@section scripts
+{
+    @*add this bundle for client side validation*@
+    @Scripts.Render("~/bundles/jqueryval")
+
+    @*all other plugins are used in lib bundles*@
+    <script>
+        $(document).ready(function () {
+            //view model variable to submit in ajax request
+            var vm = {
+                movieIds: []
+            };
+
+            //for autocompletion
+            var customers = new Bloodhound({
+                //change whitespace('value') to whitespace('name')
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                //deleted prefetch because not needed
+                remote: {
+                    //replace the url with our own. Query is what the user types at runtime
+                    url: '/api/customers?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            //get the textbox. change everything to customers
+            $('#customer').typeahead({
+                minLength: 3,
+                highlight: true //matching characters will be bold
+            }, {
+                    name: 'customers',
+                    display: 'name', //change from 'value' to 'name'
+                    source: customers //customers variable from above
+                }).on("typeahead:select", function (e, customer) { //on select event
+                    //to send the correct id to server
+                    vm.customerId = customer.id;
+                });
+
+            //for movies. list, not single value
+            var movies = new Bloodhound({
+                //change whitespace('value') to whitespace('name')
+                datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                //deleted prefetch because not needed
+                remote: {
+                    //replace the url with our own. Query is what the user types at runtime
+                    url: '/api/movies?query=%QUERY',
+                    wildcard: '%QUERY'
+                }
+            });
+
+            $('#movie').typeahead({
+                minLength: 3,
+                highlight: true
+            }, {
+                    name: 'movies',
+                    display: 'name',
+                    source: movies
+            }).on("typeahead:select", function (e, movie) {
+                //append movie to list in dom
+                $("#movies").append("<li class='list-group-item'>" + movie.name + "</li>");
+
+                //reset textbox to blank using method from typeahead
+                $("#movie").typeahead("val", "");
+
+                //add movie to list of movies in view model
+                vm.movieIds.push(movie.id);
+            });
+
+            //custom validator
+            //must be select a user that is in db and shows up in typeahead
+            $.validator.addMethod("validCustomer", function () {
+                return vm.customerId && vm.customerId !== 0;
+            }, "Please select a valid customer."); //pass in error message as second argument
+
+            //custom validator. user must select 1+ movies
+            $.validator.addMethod("atLeastOneMovie", function () {
+                return vm.movieIds.length > 0;
+            }, "Please select at least one movie.");
+
+            //client side validation form jqueryval bundle
+            var validator = $("#newRental").validate({
+                submitHandler: function () {
+                    //this stuff was copy and pasted from below to allow for client-side validation
+                    //e.preventDefault does not work inside here. return false at the bottom instead
+
+                    //use ajax
+                    $.ajax({
+                        url: "/api/newRental",
+                        method: "post",
+                        data: vm //submit the viewmodel variable from top of scripts
+                    })
+                    .done(function () {
+                        toastr.success("Rentals successfully recorded.");
+
+                        //clear input values and list of movies
+                        $("#customer").typeahead("val", "");
+                        $("#movie").typeahead("val", "");
+                        $("#movies").empty();
+
+                        //reset view model
+                        vm = { movieIds: [] };
+
+                        //reset the validation for the form
+                        validator.resetForm(); 
+                    })
+                    .fail(function () {
+                        toastr.error("Something unexpected happened.")
+                    });
+
+                    //does same as e.preventDefault
+                    return false;
+                }
+            });
+
+            //for server side request
+            //$("#newRental").submit(function (e) {
+            //    //block refresh
+            //    e.preventDefault();
+
+            //    //use ajax
+            //    $.ajax({
+            //        url: "/api/newRental",
+            //        method: "post",
+            //        data: vm //submit the viewmodel variable from top of scripts
+            //    })
+            //    .done(function () {
+            //        toastr.success("Rentals successfully recorded.");
+            //    })
+            //    .fail(function () {
+            //        toastr.error("Something unexpected happened.")
+            //    });
+            //})
+        });
+    </script>
+}
+

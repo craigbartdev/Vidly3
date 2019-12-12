@@ -20,9 +20,22 @@ namespace Vidly3.Controllers.Api
         }
 
         //GET /api/movies
-        public IHttpActionResult GetMovies() {
+        public IHttpActionResult GetMovies(string query = null) {
             //automatically maps Genre to GenreDto in movie map
-            var movieDtos = _context.Movies.Include(m => m.Genre).ToList().Select(Mapper.Map<Movie, MovieDto>);
+            //var movieDtos = _context.Movies.Include(m => m.Genre).ToList().Select(Mapper.Map<Movie, MovieDto>);
+
+            //after adding typeahead. only get movies that are available
+            var moviesQuery = _context.Movies
+                .Include(m => m.Genre)
+                .Where(m => m.NumberAvailable > 0);
+
+            //filter name of movie for typeahead
+            if (!String.IsNullOrWhiteSpace(query))
+                moviesQuery = moviesQuery.Where(m => m.Name.Contains(query));
+
+            var movieDtos = moviesQuery
+                .ToList()
+                .Select(Mapper.Map<Movie, MovieDto>);
 
             return Ok(movieDtos);
         }

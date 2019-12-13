@@ -3,6 +3,7 @@
 
 #files that I added to hide keys
 [Cc]onfig/
+AppSettings.config
 
 # User-specific files
 *.suo

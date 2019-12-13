@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
@@ -6,7 +7,7 @@ using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
 using Vidly3.Models;
-using Vidly3.Config;
+//using Vidly3.Config; //not needed after setting up appSettings
 
 namespace Vidly3
 {
@@ -55,10 +56,10 @@ namespace Vidly3
             //   consumerKey: "",
             //   consumerSecret: "");
 
-            //use Keys from 
+            //use AppSettings from appSettings
             app.UseFacebookAuthentication(
-               appId: Keys.appId,
-               appSecret: Keys.appSecret);
+               appId: ConfigurationManager.AppSettings["FacebookAppId"],
+               appSecret: ConfigurationManager.AppSettings["FacebookAppSecret"]);
 
             //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
             //{

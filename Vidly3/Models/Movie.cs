@@ -23,7 +23,7 @@ namespace Vidly3.Models
         public byte NumberInStock { get; set; }
 
         [Range(1, 20)]
-        public byte NumberAvailable { get; set; }
+        public byte NumberAvailable { get; set; } //bytes are required automatically
 
         public Genre Genre { get; set; }
 

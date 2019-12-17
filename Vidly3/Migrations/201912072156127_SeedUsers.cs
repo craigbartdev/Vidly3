@@ -8,6 +8,10 @@ namespace Vidly3.Migrations
         public override void Up()
         {
             //use @ verbatim string to write on multiple lines
+            //will have made these users and roles before hand
+            //copy these users and roles from View Data in SQL explorer and paste the scripts here
+            //delete the users in the db so there are no duplicates then run this script
+            //now when deploying to the production db you will initially get these users in their correct roles
             Sql(@"
                 INSERT INTO [dbo].[AspNetUsers] ([Id], [Email], [EmailConfirmed], [PasswordHash], [SecurityStamp], [PhoneNumber], [PhoneNumberConfirmed], [TwoFactorEnabled], [LockoutEndDateUtc], [LockoutEnabled], [AccessFailedCount], [UserName], [DrivingLicense]) VALUES (N'e0e6fc91-0ba8-4728-821a-93dbaabedd17', N'user@vidly.com', 0, N'ABhsCVsj4aRAqe3LQKo5VxSfi7t0nJj97tsXVaFFLn6bJRSUXevhoP6xJM+DAnLx0A==', N'ba564da6-c247-4387-8819-0e03d49ad20b', NULL, 0, 0, NULL, 1, 0, N'user@vidly.com', N'12345')
 

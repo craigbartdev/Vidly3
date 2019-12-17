@@ -26,6 +26,7 @@ namespace Vidly3.App_Start
             //mapping for get requests in api
             Mapper.CreateMap<Movie, MovieDto>();
             //mapping for POST and PUT. make Ignore Id for PUT
+            //also ignore DateAdded
             Mapper.CreateMap<MovieDto, Movie>()
                 .ForMember(m => m.Id, opt => opt.Ignore())
                 .ForMember(m => m.DateAdded, opt => opt.Ignore());

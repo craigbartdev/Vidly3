@@ -33,7 +33,7 @@ namespace Vidly3.Controllers
             var viewModel = new MovieFormViewModel()
             {
                 //prevent null Id error by setting new Movie. Caused weird default values in form.
-                //not needed after making viewModel constructor
+                //not needed after making viewModel constructor with Id set to 0
                 //Movie = new Movie(), 
                 Genres = genres
             };
@@ -60,8 +60,20 @@ namespace Vidly3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Save(Movie movie)
         {
+            ////how to log model state errors in Debug/Windows/Output
+            //var errorList = ModelState.Values.SelectMany(m => m.Errors)
+            //                     .Select(e => e.ErrorMessage)
+            //                     .ToList();
+
+            //foreach (var error in errorList)
+            //{
+            //    //the log statement
+            //    System.Diagnostics.Debug.WriteLine(error);
+            //}
+
             //redirect back to form on invalid form entry
             if (!ModelState.IsValid)
             {
@@ -78,6 +90,10 @@ namespace Vidly3.Controllers
             {
                 //set DateAdded to current DateTime
                 movie.DateAdded = DateTime.Now;
+                //set number available to number in stock initially
+                //was set to 0 in viewmodel
+                movie.NumberAvailable = movie.NumberInStock;
+
                 _context.Movies.Add(movie);
             }
             else //edit
@@ -88,6 +104,10 @@ namespace Vidly3.Controllers
                 movieInDb.Name = movie.Name;
                 movieInDb.ReleaseDate = movie.ReleaseDate;
                 movieInDb.GenreId = movie.GenreId;
+                //calculate number available based on old number in stock value
+                //(new numinstock - old numinstock) + old num available
+                //assume users will only provide inputs that leave number available > 0
+                movieInDb.NumberAvailable = (byte) (movie.NumberAvailable + (movie.NumberInStock - movieInDb.NumberInStock));
                 movieInDb.NumberInStock = movie.NumberInStock;
             }
             

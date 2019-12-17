@@ -163,8 +163,8 @@ namespace Vidly3.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    ////next block is temp code for seeding DB. use instead of Seed method
-                    ////go to app and register afterwards to add an admin role
+                    ////next block is temp code for seeding DB with role and user. use instead of Seed method
+                    ////build app and register in the form to add a CanManageMovies user then comment this out
                     //var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
                     //var roleManager = new RoleManager<IdentityRole>(roleStore);
                     //await roleManager.CreateAsync(new IdentityRole("CanManageMovies"));

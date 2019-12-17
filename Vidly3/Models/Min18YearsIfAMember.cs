@@ -20,7 +20,7 @@ namespace Vidly3.Models
             if (customer.MembershipTypeId == MembershipType.Unknown || 
                 customer.MembershipTypeId == MembershipType.PayAsYouGo)
                 return ValidationResult.Success;
-            //require a birthdate
+            //require a birthdate if selecting a membership plan
             if (customer.Birthdate == null)
                 return new ValidationResult("Birthdate is required.");
             //simple year calculation. not quite perfect

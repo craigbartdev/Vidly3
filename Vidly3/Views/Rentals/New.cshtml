@@ -61,14 +61,15 @@
             $('#customer').typeahead({
                 minLength: 3,
                 highlight: true //matching characters will be bold
-            }, {
-                    name: 'customers',
-                    display: 'name', //change from 'value' to 'name'
-                    source: customers //customers variable from above
-                }).on("typeahead:select", function (e, customer) { //on select event
-                    //to send the correct id to server
-                    vm.customerId = customer.id;
-                });
+            },
+            {
+                name: 'customers',
+                display: 'name', //change from 'value' to 'name'
+                source: customers //customers variable from above
+            }).on("typeahead:select", function (e, customer) { //on select event
+                //to send the correct id to server
+                vm.customerId = customer.id;
+            });
 
             //for movies. list, not single value
             var movies = new Bloodhound({

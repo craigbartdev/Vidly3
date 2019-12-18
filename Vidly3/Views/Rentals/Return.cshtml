@@ -1,0 +1,103 @@
+﻿@model IEnumerable<Vidly3.Dtos.RentalDto>
+@{
+    ViewBag.Title = "Return";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Active Rentals</h2>
+
+<table id="rentals" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Customer</th>
+            <th>Movie</th>
+            <th>Date Rented</th>
+            <th>Return</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+            //pass this in PUT request
+
+            var table = $("#rentals").DataTable({
+                ajax: {
+                    url: "/api/ActiveRentals",
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        //show plain text from RentalDto
+                        data: "customer.name"
+                    },
+                    {
+                        data: "movie.name"
+                    },
+                    {
+                        data: "dateRented",
+                        render: function (data) {
+                            //convert C# DateTime string to js Date. parse includes ms so we wrap it as a new Date
+                            const date = new Date(Date.parse(data));
+
+                            //format date. use getUTCDate for universal timezones.
+                            //getMonth is initialized to 0 so add 1
+                            return (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+                        }
+                    },
+                    {
+                        data: "id",
+                        render: function (data, type, rental) {
+                            //include all the data needed for the ReturnRentalDto PUT request
+                            return `<button class='btn-link js-update' 
+                                    data-rental-id=${data}
+                                    data-movie-id=${rental.movieId}
+                                    >Return</button>`;
+                        }
+                    }
+                ],
+                //order with most recent date rented at top.
+                //2 is the column index and is in descending order.
+                //then group the customer names together in ascending order if date is the same
+                "order": [[2, "desc"], [0, "asc"]]
+            });
+
+            //add a bootbox popup box on delete button click
+            $("#rentals").on("click", ".js-update", function () {
+                var button = $(this);
+
+                bootbox.confirm("Are you sure that you want to return this movie?", function (result) {
+                    if (result) {
+
+                        //uses ReturnRentalDto format because ReturnRental was a lot of stuff
+                        //also had to load objects like movie and customer
+                        //UpdateRental takes this datatype which only has an id and a movieId
+                        const dto = {
+                            id: button.attr("data-rental-id"),
+                            movieId: button.attr("data-movie-id")
+                        }
+
+                        $.ajax({
+                            url: "/api/rentals/" + button.attr("data-rental-id"),
+                            method: "PUT",
+                            data: dto,
+                            success: function () {
+                                toastr.success("Movie successfully returned");
+
+                                //draw redraws the table
+                                table.row(button.parents("tr")).remove().draw();
+                            },
+                            error: function () {
+                                toastr.error("Something went wrong");
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
+

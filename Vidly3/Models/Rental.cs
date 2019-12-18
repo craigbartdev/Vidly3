@@ -13,8 +13,14 @@ namespace Vidly3.Models
         [Required]
         public Customer Customer { get; set; }
 
+        //need foreign key for the Return view and api actions
+        public int CustomerId { get; set; }
+
         [Required]
         public Movie Movie { get; set; }
+
+        //need foreign key for the Return view and api actions
+        public int MovieId { get; set; }
 
         public DateTime DateRented { get; set; }
 

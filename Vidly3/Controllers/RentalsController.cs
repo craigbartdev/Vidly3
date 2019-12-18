@@ -8,8 +8,13 @@ namespace Vidly3.Controllers
 {
     public class RentalsController : Controller
     {
-        // GET: Rental
+        // Render the view where we will make post request to API
         public ActionResult New()
+        {
+            return View();
+        }
+
+        public ActionResult Return()
         {
             return View();
         }

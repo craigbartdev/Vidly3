@@ -32,6 +32,8 @@ namespace Vidly3.App_Start
                 .ForMember(m => m.DateAdded, opt => opt.Ignore());
             //for reference in MovieDto
             Mapper.CreateMap<Genre, GenreDto>();
+
+            Mapper.CreateMap<Rental, RentalDto>();
         }
     }
 }

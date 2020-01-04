@@ -18,6 +18,7 @@
             <th>Customer</th>
             <th>Membership Type</th>
             <th>Delete</th>
+            <th>Is Delinquent</th>
         </tr>
     </thead>
     <tbody>
@@ -94,8 +95,18 @@ else
                         render: function (data) {
                             return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
                         }
+                    },
+                    {
+                        data: "isDelinquent",
+                        render: function (data, type, customer) {
+                            //if isDelinquent is true render checked checkbox else unchecked checkbox
+                            if (data) {
+                                return "<input type='checkbox' class='js-put' data-customer-id=" + customer.id + " checked/>"
+                            } else {
+                                return "<input type='checkbox' class='js-put' data-customer-id=" + customer.id + " />"
+                            }
+                        }
                     }
-                        
                 ]
             });
 
@@ -149,6 +160,43 @@ else
                 //        }
                 //    });
                 //}
+            });
+
+            //handle the IsDelinquent checkbox toggle
+            $("#customers").on("change", ".js-put", function () {
+                //checkbox dom element
+                const checkbox = $(this);
+
+                //must check the literal checkbox, not the dom element to get checked
+                if (this.checked) {
+                    $.ajax({
+                        url: "/api/isDelinquent/" + checkbox.attr("data-customer-id") + "/True",
+                        method: "PUT",
+                        success: function () {
+                            toastr.warning("Customer can no longer rent movies");
+                        },
+                        error: function () {
+                            toastr.error("Something went wrong");
+
+                            //reset checkbox
+                            checkbox.toggle();
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        url: "/api/isDelinquent/" + checkbox.attr("data-customer-id") + "/False",
+                        method: "PUT",
+                        success: function () {
+                            toastr.success("Customer can now rent movies");
+                        },
+                        error: function () {
+                            toastr.error("Something went wrong");
+
+                            //reset checkbox
+                            checkbox.toggle();
+                        }
+                    });
+                }
             });
         });
     </script>

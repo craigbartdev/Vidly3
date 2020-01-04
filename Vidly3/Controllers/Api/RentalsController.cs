@@ -52,7 +52,7 @@ namespace Vidly3.Controllers.Api
         //ReturnRentalDto only includes rental id and movie id to simplify the AJAX request
         //was a pain loading the entire movie and customer objects which we did not need to send back
         [HttpPut]
-        public IHttpActionResult UpdateRental(int id, ReturnRentalDto rentalDto)
+        public IHttpActionResult ReturnRental(int id, ReturnRentalDto rentalDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(rentalDto.ToString());
@@ -121,9 +121,12 @@ namespace Vidly3.Controllers.Api
                 movie.NumberAvailable--;
 
                 //instead of using automapper we manually map the dto to the rental
+                //had to include the ids after adding them to the model
                 var rental = new Rental
                 {
+                    CustomerId = customer.Id,
                     Customer = customer,
+                    MovieId = movie.Id,
                     Movie = movie,
                     DateRented = DateTime.Now
                 };

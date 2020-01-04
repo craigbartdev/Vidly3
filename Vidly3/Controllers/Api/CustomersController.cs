@@ -130,6 +130,23 @@ namespace Vidly3.Controllers.Api
             _context.SaveChanges();
         }
 
+        //for the IsDelinquent toggle. will put the data in the query string
+        [Route("api/isDelinquent/{id:int}/{isDelinquent:bool}")]
+        [HttpPut]
+        public IHttpActionResult ToggleIsDelinquent(int id, bool isDelinquent)
+        {
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id == id);
+
+            if (customerInDb == null)
+                return NotFound();
+
+            customerInDb.IsDelinquent = isDelinquent;
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
         //DELETE /api/customers/1
         [HttpDelete]
         public void DeleteCustomer(int id)

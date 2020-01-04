@@ -19,7 +19,8 @@ namespace Vidly3.App_Start
             //add ignore so no Id error on api PUT request
             //Ignore Id for PUT if there is an Id
             Mapper.CreateMap<CustomerDto, Customer>()
-                .ForMember(c => c.Id, opt => opt.Ignore());
+                .ForMember(c => c.Id, opt => opt.Ignore())
+                .ForMember(c => c.IsDelinquent, opt => opt.Ignore());
             //for reference in CustomerDto
             Mapper.CreateMap<MembershipType, MembershipTypeDto>();
 

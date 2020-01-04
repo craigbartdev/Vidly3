@@ -29,5 +29,9 @@ namespace Vidly3.Dtos
         //comment out min18years when using IHttpActionResult unless we change it to use a dto
         //[Min18YearsIfAMember]
         public DateTime? Birthdate { get; set; }
+
+        //to mark customer as delinquent
+        //make nullible to set the initial value to false in the POST action
+        public bool? IsDelinquent { get; set; }
     }
 }

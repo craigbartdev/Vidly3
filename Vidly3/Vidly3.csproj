@@ -294,6 +294,10 @@
     <Compile Include="Migrations\201912180208067_RenameForeignKeysInRentals.Designer.cs">
       <DependentUpon>201912180208067_RenameForeignKeysInRentals.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202001020109063_AddIsDelinquentToCustomer.cs" />
+    <Compile Include="Migrations\202001020109063_AddIsDelinquentToCustomer.Designer.cs">
+      <DependentUpon>202001020109063_AddIsDelinquentToCustomer.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Customer.cs" />
@@ -640,6 +644,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201912180208067_RenameForeignKeysInRentals.resx">
       <DependentUpon>201912180208067_RenameForeignKeysInRentals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001020109063_AddIsDelinquentToCustomer.resx">
+      <DependentUpon>202001020109063_AddIsDelinquentToCustomer.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

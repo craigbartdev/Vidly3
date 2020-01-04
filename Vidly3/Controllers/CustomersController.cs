@@ -81,6 +81,9 @@ namespace Vidly3.Controllers
             //Id sent as hidden field in the form
             if (customer.Id == 0)
             {
+                //set IsDelinquent to false initially
+                customer.IsDelinquent = false;
+
                 //add to DbContext
                 _context.Customers.Add(customer);
             }

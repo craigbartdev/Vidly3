@@ -10,26 +10,32 @@
     <div class="form-group">
         <label>Customer</label>
         <div class="tt-container">
-            <!--required, data-rule, and name is for client side validation-->
-            <input id="customer" name="customer" data-rule-validCustomer="true" required type="text" value="" class="form-control" />
+            <!--required, data-rule, and name is for client side validation
+                for custom validation get rid of the required attribute-->
+            <input id="customer" name="customer" data-rule-validCustomer="true"
+                   data-rule-checkIfThreeRentals="true"
+                   data-rule-isDelinquentOnRentals="true"
+                   type="text" value="" class="form-control" />
         </div>
     </div>
 
     <div class="form-group">
         <label>Movie</label>
         <div class="tt-container">
-            <input id="movie" name="movie" data-rule-atLeastOneMovie="true" type="text" value="" class="form-control" />
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-4 col-sm-4">
-            <ul id="movies" class="list-group"></ul>
+            <input id="movie" name="movie" data-rule-atLeastOneMovie="true" 
+                   data-rule-checkIfExceedsThree="true"
+                   type="text" value="" class="form-control" />
         </div>
     </div>
 
     <button class="btn btn-primary">Submit</button>
 </form>
+
+<div style="margin-top: 50px;"class="row">
+    <div class="col-md-4 col-sm-4">
+        <ul id="movies" class="list-group"></ul>
+    </div>
+</div>
 
 @section scripts
 {
@@ -43,6 +49,31 @@
             var vm = {
                 movieIds: []
             };
+
+            //variable for checking whether a user is delinquent on payment
+            //set by user in the index list
+            //referenced in the customer typeahead on function
+            //then used for a validation rule
+            let isDelOnRentals;
+
+            //will populate with ajax customerIds and use in validation
+            let activeRentals = [];
+
+            //GET rentals for checkIfThreeRentals validator
+            $.ajax({
+                url: "/api/ActiveRentals",
+                dataType: "json",
+                contentType: "application/json",
+                method: "GET",
+                success: function (data) {
+                    //populate activeRentals with ids
+                    data.forEach(function (item) {
+                        activeRentals.push(item.customerId);
+                    });
+
+                    //console.log(activeRentals);
+                }
+            });
 
             //for autocompletion
             var customers = new Bloodhound({
@@ -69,6 +100,8 @@
             }).on("typeahead:select", function (e, customer) { //on select event
                 //to send the correct id to server
                 vm.customerId = customer.id;
+
+                isDelOnRentals = customer.isDelinquent;
             });
 
             //for movies. list, not single value
@@ -93,7 +126,9 @@
                     source: movies
             }).on("typeahead:select", function (e, movie) {
                 //append movie to list in dom
-                $("#movies").append("<li class='list-group-item'>" + movie.name + "</li>");
+                $("#movies").append("<li class='list-group-item'>"
+                    + "<button style='margin-right:10px;' data-movie-id='" + movie.id 
+                    + "' class='btn btn-default remove-movie'>X</button >" + movie.name + "</li>");
 
                 //reset textbox to blank using method from typeahead
                 $("#movie").typeahead("val", "");
@@ -102,16 +137,71 @@
                 vm.movieIds.push(movie.id);
             });
 
-            //custom validator
+            //remove a selected movie from the list and view model
+            $("#movies").on("click", ".remove-movie", function () {
+                console.log(vm.movieIds);
+
+                var button = $(this);
+
+                //get correct movie id
+                var id = button.attr("data-movie-id");
+
+                //filter out the vm
+                vm.movieIds = vm.movieIds.filter(function (movie) {
+                    //id is a string so must convert it
+                    return movie !== parseInt(id, 10);
+                });
+
+                //remove parent li. goes up chain and selects the first one
+                button.closest('li').remove();
+
+                console.log(vm.movieIds);
+            });
+
+            //custom validators
             //must be select a user that is in db and shows up in typeahead
             $.validator.addMethod("validCustomer", function () {
-                return vm.customerId && vm.customerId !== 0;
+                return vm.customerId && vm.customerId !== 0;//&& count < 3;
             }, "Please select a valid customer."); //pass in error message as second argument
+
+            //check if customer has three or rentals.
+            //activeRentals comes from the top of the scripts section
+            $.validator.addMethod("checkIfThreeRentals", function () {
+                let count = 0;
+
+                //check if three rentals. 
+                //activeRentals is just a list of CustomerIds of active rentals
+                activeRentals.forEach(function (id) {
+                    if (id == vm.customerId) {
+                        count++;
+                    }
+                });
+
+                return count < 3;
+            }, "Customer is currently renting three movies. Return a rental to rent a new movie.");
 
             //custom validator. user must select 1+ movies
             $.validator.addMethod("atLeastOneMovie", function () {
                 return vm.movieIds.length > 0;
             }, "Please select at least one movie.");
+
+            //custom validator if user will now have more than three active rentals
+            $.validator.addMethod("checkIfExceedsThree", function () {
+                let count = 0;
+
+                activeRentals.forEach(function (id) {
+                    if (id == vm.customerId) {
+                        count++;
+                    }
+                });
+
+                return (count + vm.movieIds.length) <= 3;
+            }, "Customer cannot rent more than three movies. Select fewer movies or return a current rental.");
+
+            //check whether the customer has been set to delinquent
+            $.validator.addMethod("isDelinquentOnRentals", function () {
+                return !isDelOnRentals;
+            }, "Customer is delinquent on returning rentals and cannot rent new movies.");
 
             //client side validation form jqueryval bundle
             var validator = $("#newRental").validate({

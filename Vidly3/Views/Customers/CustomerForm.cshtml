@@ -57,6 +57,9 @@
     @*hidden id field for Save action*@
     @Html.HiddenFor(m => m.Customer.Id)
 
+    @*hidden field for Save. done for IsDelinquent*@
+    @Html.HiddenFor(m => m.Customer.IsDelinquent)
+
     @*avoid CSRF attacks with this and add to action*@
     @Html.AntiForgeryToken()
 

@@ -28,5 +28,8 @@ namespace Vidly3.Models
         [Display(Name = "Date of Birth")]
         [Min18YearsIfAMember]
         public DateTime? Birthdate { get; set; }
+
+        //make nullible for Save action since it will be a hidden field
+        public bool? IsDelinquent { get; set; }
     }
 }

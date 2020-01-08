@@ -8,8 +8,10 @@
 
 <h2>Customers</h2>
 
-<p>
+@*inline styles for space between buttons*@
+<p style="display: flex;justify-content: space-between;">
     @Html.ActionLink("New Customer", "New", "Customers", null, new { @class = "btn btn-primary" })
+    @Html.ActionLink("Apply Discount", "Index", "Discount", null, new { @class = "btn btn-primary" })
 </p>
 
 <table id="customers" class="table table-bordered table-hover">
@@ -17,8 +19,8 @@
         <tr>
             <th>Customer</th>
             <th>Membership Type</th>
+            <th>Is Delinquent?</th>
             <th>Delete</th>
-            <th>Is Delinquent</th>
         </tr>
     </thead>
     <tbody>
@@ -90,13 +92,6 @@ else
                         data: "membershipType.name"
                     },
                     {
-                        data: "id",
-                        //all we need is id from data
-                        render: function (data) {
-                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
-                        }
-                    },
-                    {
                         data: "isDelinquent",
                         render: function (data, type, customer) {
                             //if isDelinquent is true render checked checkbox else unchecked checkbox
@@ -105,6 +100,13 @@ else
                             } else {
                                 return "<input type='checkbox' class='js-put' data-customer-id=" + customer.id + " />"
                             }
+                        }
+                    },
+                    {
+                        data: "id",
+                        //all we need is id from data
+                        render: function (data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
                         }
                     }
                 ]
@@ -168,12 +170,13 @@ else
                 const checkbox = $(this);
 
                 //must check the literal checkbox, not the dom element to get checked
+                //there is a specific isDelinquent action in the Customers Controller that we call
                 if (this.checked) {
                     $.ajax({
                         url: "/api/isDelinquent/" + checkbox.attr("data-customer-id") + "/True",
                         method: "PUT",
                         success: function () {
-                            toastr.warning("Customer can no longer rent movies");
+                            toastr.warning("Customer is delinquent and can no longer rent movies");
                         },
                         error: function () {
                             toastr.error("Something went wrong");
@@ -187,7 +190,7 @@ else
                         url: "/api/isDelinquent/" + checkbox.attr("data-customer-id") + "/False",
                         method: "PUT",
                         success: function () {
-                            toastr.success("Customer can now rent movies");
+                            toastr.success("Customer is now allowed to rent movies");
                         },
                         error: function () {
                             toastr.error("Something went wrong");

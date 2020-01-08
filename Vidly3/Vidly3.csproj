@@ -210,6 +210,7 @@
     <Compile Include="Controllers\Api\MoviesController.cs" />
     <Compile Include="Controllers\Api\RentalsController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
+    <Compile Include="Controllers\DiscountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\MoviesController.cs" />
@@ -575,6 +576,7 @@
     <Content Include="Views\Movies\ReadOnlyIndex.cshtml" />
     <Content Include="Views\Rentals\New.cshtml" />
     <Content Include="Views\Rentals\Return.cshtml" />
+    <Content Include="Views\Discount\Index.cshtml" />
     <None Include="Web.Testing.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

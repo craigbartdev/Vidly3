@@ -19,6 +19,9 @@ namespace Vidly3.Models
         public short SignUpFee { get; set; }
         //12 months is maximum number so use byte
         public byte DurationInMonths { get; set; }
+
+        [Display(Name = "discount rate")]
+        [Range(0, 100)]
         public byte DiscountRate { get; set; }
 
 

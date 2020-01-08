@@ -1,0 +1,40 @@
+﻿@model IList<Vidly3.Models.MembershipType>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Discount Rates</h2>
+<hr />
+
+@*we are using an indexed list*@
+@using (Html.BeginForm("Save", "Discount"))
+{
+    for (int i = 0; i < Model.Count; i++)
+    {
+        <br />
+        <h3>
+            @*We are using an IList with indexes which start from 0 so they will be 1 greater than the Id*@
+            @*Get the name of the membership type for the label and then make a textbox for each indexed membership type*@
+            @Model.FirstOrDefault(m => i == m.Id - 1).Name
+            :
+            @Html.TextBoxFor(m => m[i].DiscountRate)
+            %
+        </h3>
+        @Html.ValidationMessageFor(m => m[i].DiscountRate)
+
+        @Html.HiddenFor(m => m[i].Id)
+        @Html.HiddenFor(m => m[i].Name)
+        @Html.HiddenFor(m => m[i].SignUpFee)
+        @Html.HiddenFor(m => m[i].DurationInMonths)
+    }
+
+    <br />
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
+
+@section scripts
+    {
+        @Scripts.Render("~/bundles/jqueryval");
+    }

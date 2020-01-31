@@ -9,7 +9,7 @@ namespace Vidly3.Migrations
         {
             //use @ verbatim string to write on multiple lines
             //will have made these users and roles before hand
-            //copy these users and roles from View Data in SQL explorer and paste the scripts here
+            //copy these users and roles from View Data in SQL Server explorer and paste the scripts here
             //delete the users in the db so there are no duplicates then run this script
             //now when deploying to the production db you will initially get these users in their correct roles
             Sql(@"

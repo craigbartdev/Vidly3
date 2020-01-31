@@ -1,0 +1,84 @@
+﻿@model Vidly3.ViewModels.RolesIndexViewModel
+
+@{
+    ViewBag.Title = "UserDetails";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*display the title and the back to users button*@
+<h2 style="display:flex;justify-content:space-between;">
+    @Model.UserEmail
+
+    @Html.ActionLink("Back to Users", "Index", "Roles", null, new { @class = "btn btn-primary" })
+</h2>
+
+<h5>Click checkbox to add or remove user from role:</h5>
+
+<ul id="wrap">
+
+    @foreach (var role in Model.AllRoles)
+    {
+        var check = Model.Roles.Contains(role.Name);
+
+        if (!check)
+        {
+            <li>
+                <label for=@role.Name>@role.Name</label>
+                <input type="checkbox" id=@role.Name class="rolebox" data-user-id=@Model.UserId data-role=@role.Name />
+            </li>
+        }
+        else
+        {
+            <li>
+                <label for=@role.Name>@role.Name</label>
+                <input type="checkbox" id=@role.Name class="rolebox" data-user-id=@Model.UserId data-role=@role.Name checked />
+            </li>
+        }
+    }
+
+</ul>
+
+@section scripts 
+{
+    <script>
+        $(document).ready(function () {
+            $("#wrap").on("click", ".rolebox", function () {
+                var checkbox = $(this);
+
+                if (this.checked) {
+                    $.ajax({
+                        //attr id is the role name
+                        url: "/api/ChangeRole/" + checkbox.attr("data-user-id") + "/" + checkbox.attr("data-role") + "/True",
+                        method: "PUT",
+                        success: function () {
+                            toastr.success("Customer has been added to role");
+                        },
+                        error: function () {
+                            toastr.error("Someting went wrong");
+
+                            checkbox.toggle();
+                        }
+                    });
+                } else {
+                    $.ajax({
+                        //attr id is the role name
+                        url: "/api/ChangeRole/" + checkbox.attr("data-user-id") + "/" + checkbox.attr("data-role") + "/False",
+                        method: "PUT",
+                        success: function () {
+                            toastr.success("Customer has been removed from role");
+                        },
+                        error: function () {
+                            toastr.error("Someting went wrong");
+
+                            checkbox.toggle();
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
+
+
+
+

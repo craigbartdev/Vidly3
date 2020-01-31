@@ -163,11 +163,19 @@ namespace Vidly3.Controllers
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    ////next block is temp code for seeding DB with role and user. use instead of Seed method
-                    ////build app and register in the form to add a CanManageMovies user then comment this out
+                    //next block is temp code for seeding DB with role and user. use instead of Seed method
+                    //build app and register in the form to add a CanManageMovies user then comment this out
+                    //UserStore and manager were defined at the top, so just define RoleManager stuff here
                     //var roleStore = new RoleStore<IdentityRole>(new ApplicationDbContext());
                     //var roleManager = new RoleManager<IdentityRole>(roleStore);
                     //await roleManager.CreateAsync(new IdentityRole("CanManageMovies"));
+                    //await UserManager.AddToRoleAsync(user.Id, "CanManageMovies");
+
+                    //from additional exercise when adding to both users and movies priveledges
+                    //CanManageMovies was already created as a role so we just add a user to it
+                    //remember to uncomment the role store and role manager stuff above
+                    //await roleManager.CreateAsync(new IdentityRole("CanManageUsers"));
+                    //await UserManager.AddToRoleAsync(user.Id, "CanManageUsers");
                     //await UserManager.AddToRoleAsync(user.Id, "CanManageMovies");
 
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);

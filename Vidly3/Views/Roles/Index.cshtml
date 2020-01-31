@@ -1,0 +1,27 @@
+﻿@model IList<Vidly3.ViewModels.RolesIndexViewModel>
+@*cannot be ienumerable if we want to iterate and use Count*@
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>User Roles</h2>
+<h5>Click a user's email to edit their roles</h5>
+
+@for (var i = 0; i < Model.Count; i++) {
+    <h3 style="margin-bottom: 10px;">@Html.ActionLink(@Model[i].UserEmail, "UserDetails", "Roles", new { id = Model[i].UserId }, null)</h3>
+
+    if (Model[i].Roles.Any())
+    {
+        <ul>
+            @foreach( var role in Model[i].Roles)
+            {
+            <li>@role</li>
+            }
+        </ul>
+    } else
+    {
+        <h5>Not assigned to any roles</h5>
+    }
+}
